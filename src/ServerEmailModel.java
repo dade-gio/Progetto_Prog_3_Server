@@ -269,3 +269,10 @@ public class ServerEmailModel extends Observable {
     }
 
 }
+
+
+/*
+@TODO
+* sostituire tramsissione rmi in server con quella socket
+* gestire inbox di mail prendendola da server e trasmettendola sul client
+*/
