@@ -1,3 +1,5 @@
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
@@ -17,7 +19,25 @@ public class ServerEmailModel extends Observable {
     /**
      * Classe innestata Log
      */
-    public class Log extends UnicastRemoteObject implements ServerInterface {
+    public void startServer(int port) {
+        new Thread(() -> {
+            try (ServerSocket serverSocket = new ServerSocket(port)) {
+                System.out.println("Server in ascolto sulla porta " + port);
+
+                while (true) {
+                    Socket clientSocket = serverSocket.accept();
+                    System.out.println("Nuova connessione da " + clientSocket.getInetAddress());
+
+                    // Gestisci la connessione in un nuovo thread
+                    new ClientHandler(clientSocket, this).start();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start(); // Start the server in a new thread
+    }
+
+    public class Log extends UnicastRemoteObject {
         private String  nomeLog, testoLog;
         private Date dataCreazione;
 
@@ -67,7 +87,6 @@ public class ServerEmailModel extends Observable {
          * Metodo che controlla quali mail in un determinato indirizzo mail sono state lette
          * e ne ritorna il numero esatto
          */
-        @Override
         public int getInfoLetture(String address){
             int num = 0;
             ArrayList<Email> list = serverMailList.get(address);
@@ -83,7 +102,6 @@ public class ServerEmailModel extends Observable {
          * Metodo che aggiunge una nuovo messaggio al Log
          * e notifica alla vista il cambiamento effettuato
          */
-        @Override
         public void appendToLog(String testoLog){
             setTestoLog(getTestoLog()+"\n"+newMessageLog(testoLog));
             setChanged();
@@ -121,7 +139,6 @@ public class ServerEmailModel extends Observable {
          * Metodo che imposta come letta una determinata mail all'interno del server quando
          * lato client si clicca su di essa
          */
-        @Override
         public synchronized void setReadMail(String address, Email mail) throws RemoteException{
             ArrayList<Email> list = serverMailList.get(address);
             if(list.contains(mail)){
@@ -140,7 +157,6 @@ public class ServerEmailModel extends Observable {
          * nel caso in cui non esistelle la casella mail a cui aggiungerla: messaggio di errore
          * @param mail mail da inviare
          */
-        @Override
         public synchronized boolean inviaMail(Email mail) throws RemoteException{
             boolean success;
             if (serverMailList.containsKey(mail.getDest())) {
@@ -161,7 +177,6 @@ public class ServerEmailModel extends Observable {
          * @param address indirizzo associato all'account di cui si vuole la
          * lista di email
          */
-        @Override
         public synchronized ArrayList<Email> getEmail(String address) throws RemoteException{
             return serverMailList.get(address);
         }
@@ -171,7 +186,6 @@ public class ServerEmailModel extends Observable {
          * @param mail è la mail da eliminare
          * @param key l'indirizzo mail associato
          */
-        @Override
         public synchronized void deleteEmail(String key,Email mail) throws RemoteException {
             serverMailList.get(key).remove(mail);
             appendToLog("Mail " + mail + " eliminata dall'account: " + key);
@@ -224,7 +238,7 @@ public class ServerEmailModel extends Observable {
      */
     public ServerEmailModel() {
         this.serverMailList = new HashMap<>();
-        String csvFile = "Progetto_Prog_3_Server/src/email.csv";
+        String csvFile = "src/archives/email.csv";
         BufferedReader br = null;
         String line;
         String cvsSplitBy = "#";

@@ -12,6 +12,9 @@ public class ServerEmailApp extends Application {
         // Modello
         ServerEmailModel serverEmailMod = new ServerEmailModel();
 
+        // Start the server on port 12345 (or any available port)
+        serverEmailMod.startServer(12345);
+
         // Controller
         ServerEmailController serverEmailCtrl = new ServerEmailController(serverEmailMod);
 
