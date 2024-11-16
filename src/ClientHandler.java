@@ -6,6 +6,8 @@ class ClientHandler extends Thread {
     private Socket clientSocket;
     private ServerEmailModel serverModel;
 
+
+    //ESKEREEEEE
     public ClientHandler(Socket socket, ServerEmailModel model) {
         this.clientSocket = socket;
         this.serverModel = model;
