@@ -127,7 +127,7 @@ public class ServerEmailModel extends Observable {
      * Metodo che aggiorna il file CSV con il contenuto corrente di emailData.
      */
     private synchronized void updateCsvFile() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("src/Server/archives/email.csv"))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("src/email.csv"))) {
             for (String[] emailFields : emailData) {
                 String line = String.join("#", emailFields);
                 bw.write(line);

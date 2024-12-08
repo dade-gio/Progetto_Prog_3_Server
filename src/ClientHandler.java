@@ -3,35 +3,28 @@ import CommonResources.Email;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
     private final ServerEmailModel serverModel;
     private final String currentUserEmail;
-    private final Socket clientSocket;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+    private String switchCase;
 
-    public ClientHandler(ServerEmailModel model, String currentUserEmail, Socket clientSocket) {
+    public ClientHandler(ServerEmailModel model, String currentUserEmail, String switchCase, ObjectInputStream in, ObjectOutputStream out) {
         this.serverModel = model;
         this.currentUserEmail = currentUserEmail;
-        this.clientSocket = clientSocket;
+        this.switchCase = switchCase;
+        this.in = in;
+        this.out = out;
     }
 
     @Override
     public void run() {
-        try (ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
-             ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream())) {
+        try {
 
-            while (true) {
-                String switchCase = in.readUTF(); // Legge un comando dal client
-
-                // Se la connessione è chiusa, esci dal ciclo
-                if (clientSocket.isClosed()) {
-                    System.out.println("Connessione chiusa, interrompo il thread.");
-                    break;
-                }
-
-                switch (switchCase) {
+            switch (switchCase) {
                     case "SYNC":
                         ArrayList<Email> userEmails = (ArrayList<Email>) serverModel.getEmailDataForUser(currentUserEmail);
                         out.writeObject(userEmails);
@@ -62,20 +55,11 @@ public class ClientHandler implements Runnable {
                         out.writeUTF("Unknown command");
                         out.flush();
                 }
-            }
+
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            try {
-                // Assicurati che il socket venga chiuso correttamente
-                if (clientSocket != null && !clientSocket.isClosed()) {
-                    clientSocket.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

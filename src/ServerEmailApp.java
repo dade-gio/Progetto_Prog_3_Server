@@ -102,20 +102,14 @@ public class ServerEmailApp extends Application {
 
 
             out.writeObject(userEmails);
-            out.flush();
             out.writeInt(numLette);
             out.flush();
 
-            clientSocket.close();
-            in.close();
-            out.close();
-
-            serverSocket = new ServerSocket(11111);
-
-            // Gestisci la connessione del client nel thread separato
-            ClientHandler clientHandler = new ClientHandler(emailModel, currentUser, clientSocket);
-            threadPool.submit(clientHandler);  // Avvia il thread per ascoltare i messaggi
-
+            while (true) {
+                String switchCase = in.readUTF();
+                ClientHandler clientHandler = new ClientHandler(emailModel, currentUser, switchCase, in, out);
+                clientHandler.run();
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
