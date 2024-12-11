@@ -56,10 +56,10 @@ public class ServerEmailModel extends Observable {
         if (emailFound) {
             // Aggiorna il file CSV dopo aver marcato la mail come letta
             updateCsvFile();
-            addLog("commonResources.Email letta: " + mail.getMittEmail() + " - " + mail.getArgEmail());
+            addLog("Email letta: " + mail.getMittEmail() + " - " + mail.getArgEmail());
             return true;
         } else {
-            addLog("Errore: commonResources.Email non trovata per l'indirizzo: " + mail.getMittEmail());
+            addLog("Errore: Email non trovata per l'indirizzo: " + mail.getMittEmail());
             return false;
         }
     }
@@ -93,9 +93,8 @@ public class ServerEmailModel extends Observable {
     /**
      * Metodo che rimuove dalla lista di mail la
      * @param mailToDelete è la mail da eliminare
-     * @param key l'indirizzo mail associato
-     */
-    public void deleteEmail(String key, Email mailToDelete) {
+    */
+    public void deleteEmail(Email mailToDelete) {
         Iterator<String[]> iterator = emailData.iterator();
         boolean found = false;
 
