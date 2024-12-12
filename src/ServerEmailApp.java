@@ -18,33 +18,6 @@ public class ServerEmailApp extends Application {
     private ExecutorService threadPool;
     private ServerSocket serverSocket;
     private ServerSocket deleteServerSocket;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private ServerSocket sendServerSocket;
     private ServerSocket showServerSocket;
     private ServerEmailModel emailModel;

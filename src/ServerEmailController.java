@@ -8,7 +8,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -20,6 +19,7 @@ public class ServerEmailController implements ActionListener {
     private ServerSocket syncServerSocket;
     private ServerEmailController controller;
     private ExecutorService threadPool;
+    private int dynamicPort = 0;
 
 
     public ServerEmailController(ServerEmailModel serverEmailMod, ObservableList<String> list) {
@@ -80,15 +80,19 @@ public class ServerEmailController implements ActionListener {
             out.writeInt(numLette);
             out.flush();
 
+            dynamicPort = (int) (Math.random() * (10*5 - 0 + 1));
+            out.writeInt(dynamicPort);
+            out.flush();
 
             new Thread(() -> {
                 try {
-                    // Specifica l'IP e la porta
+                    // Specifica l'indirizzo IP e una porta dinamica
                     InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
-                    syncServerSocket = new ServerSocket(12348, 50, bindAddress);
+                    syncServerSocket = new ServerSocket(dynamicPort, 50, bindAddress);
+                    serverEmailMod.addLog("Server di sincronizzazione attivo su porta: " + dynamicPort);
 
                     while (true) {
-                        Socket syncSocket = syncServerSocket.accept(); // entri solo se accetta
+                        Socket syncSocket = syncServerSocket.accept(); // Accetta connessioni sulla porta dinamica
                         controller = new ServerEmailController(serverEmailMod, logList);
                         threadPool.submit(() -> controller.handleSync(syncSocket, currentUser));
                     }
@@ -96,6 +100,7 @@ public class ServerEmailController implements ActionListener {
                     serverEmailMod.addLog("Errore nella sincronizzazione: " + e.getMessage());
                 }
             }).start();
+
 
         } catch (IOException e) {
             e.printStackTrace();
