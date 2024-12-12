@@ -18,6 +18,33 @@ public class ServerEmailApp extends Application {
     private ExecutorService threadPool;
     private ServerSocket serverSocket;
     private ServerSocket deleteServerSocket;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private ServerSocket sendServerSocket;
     private ServerSocket showServerSocket;
     private ServerEmailModel emailModel;
@@ -65,7 +92,7 @@ public class ServerEmailApp extends Application {
                     while (true) {
                         Socket clientSocket = serverSocket.accept();
                         controller = new ServerEmailController(emailModel, logList);
-                        threadPool.submit(() -> controller.handleClient(clientSocket, threadPool));
+                         threadPool.submit(() -> controller.handleClient(clientSocket, threadPool));
                     }
                 } catch (IOException e) {
                     emailModel.addLog("Errore nella comunicazione con il server: " + e.getMessage());

@@ -115,7 +115,7 @@ public class ServerEmailModel extends Observable {
 
         if (found) {
             updateCsvFile(); // Aggiorna il file CSV dopo aver eliminato l'email
-            addLog("commonResources.Email rimossa correttamente: " + mailToDelete);
+            addLog("Email rimossa correttamente: " + mailToDelete);
         } else {
             addLog("Errore: L'email specificata non è stata trovata");
         }

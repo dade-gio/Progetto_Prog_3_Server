@@ -8,6 +8,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -59,6 +60,7 @@ public class ServerEmailController implements ActionListener {
                 out.writeObject(currentUser);
                 out.writeInt(lette);
                 out.flush();
+                return;
             }
 
             serverEmailMod.setCntLette(0);
@@ -141,9 +143,42 @@ public class ServerEmailController implements ActionListener {
             ObjectInputStream in_send = new ObjectInputStream(sendSocket.getInputStream());
 
             Email email = (Email) in_send.readObject();
-            serverEmailMod.inviaMail(email);
-            out_send.writeUTF("OK");
-            out_send.flush();
+            Set<String> validUsers = loadRegisteredUsers("src/users.txt");
+
+            System.out.println((email.getCcString()));
+
+            if (email.getCcString().contains(",")) {
+
+                String[] users = email.getCcString().split(", ");
+
+                for (int i = 0; i < users.length; i++) {
+
+                    if(!validUsers.contains(users[i])){
+                        serverEmailMod.addLog("Connessione rifiutata: utente non registrato - " + users[i]);
+                        out_send.writeUTF("ERROR");
+                        out_send.flush();
+                        break;
+                    } else {
+                        serverEmailMod.inviaMail(email);
+                        out_send.writeUTF("OK");
+                        out_send.flush();
+                    }
+                }
+
+            } else {
+
+                if(!validUsers.contains(email.getCcString())){
+                    serverEmailMod.addLog("Connessione rifiutata: utente non registrato - " + email.getDest());
+                    out_send.writeUTF("ERROR");
+                    out_send.flush();
+
+                } else {
+                    serverEmailMod.inviaMail(email);
+                    out_send.writeUTF("OK");
+                    out_send.flush();
+                }
+            }
+
 
             in_send.close();
             out_send.close();
