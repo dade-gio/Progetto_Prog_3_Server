@@ -20,6 +20,8 @@ public class ServerEmailController implements ActionListener {
     private ServerEmailController controller;
     private ExecutorService threadPool;
     private int dynamicPort = 0;
+    private ServerSocket loginSocket;
+
 
 
     public ServerEmailController(ServerEmailModel serverEmailMod, ObservableList<String> list) {
@@ -49,18 +51,20 @@ public class ServerEmailController implements ActionListener {
 
             // Leggi l'elenco degli utenti registrati
             Set<String> validUsers = loadRegisteredUsers("src/users.txt");
+            System.out.println("QUI");
 
             // Attendi email dell'utente
             String currentUser = in.readUTF();
+            System.out.println(currentUser);
             serverEmailMod.addLog("Tentativo di connessione da parte di: " + currentUser);
 
             // Verifica se l'utente è registrato
             if (!validUsers.contains(currentUser.toLowerCase())) {
                 serverEmailMod.addLog("Connessione rifiutata: utente non registrato - " + currentUser);
+                out.writeUTF("RIFIUTATO");
                 out.writeObject(currentUser);
                 out.writeInt(lette);
                 out.flush();
-                return;
             }
 
             serverEmailMod.setCntLette(0);
@@ -76,6 +80,7 @@ public class ServerEmailController implements ActionListener {
 
             int numLette = serverEmailMod.getCntLette();
 
+            out.writeUTF("ACCETTATO");
             out.writeObject(userEmails);
             out.writeInt(numLette);
             out.flush();
