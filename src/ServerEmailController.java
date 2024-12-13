@@ -18,10 +18,7 @@ public class ServerEmailController implements ActionListener {
     private final ObservableList<String> logList;
     private ServerSocket syncServerSocket;
     private ServerEmailController controller;
-    private ExecutorService threadPool;
     private int dynamicPort = 0;
-    private ServerSocket loginSocket;
-
 
 
     public ServerEmailController(ServerEmailModel serverEmailMod, ObservableList<String> list) {
@@ -51,11 +48,9 @@ public class ServerEmailController implements ActionListener {
 
             // Leggi l'elenco degli utenti registrati
             Set<String> validUsers = loadRegisteredUsers("src/users.txt");
-            System.out.println("QUI");
 
             // Attendi email dell'utente
             String currentUser = in.readUTF();
-            System.out.println(currentUser);
             serverEmailMod.addLog("Tentativo di connessione da parte di: " + currentUser);
 
             // Verifica se l'utente è registrato
@@ -72,8 +67,8 @@ public class ServerEmailController implements ActionListener {
             // Ottieni email dell'utente dal modello
             ArrayList<Email> userEmails = serverEmailMod.getEmailDataForUser(currentUser);
             if (userEmails == null) {
-                serverEmailMod.addLog("Utente non esistente");
-                out.writeUTF("Utente non esistente");
+                serverEmailMod.addLog("Dati non trovati");
+                out.writeUTF("Dati non trovati");
                 out.flush();
                 return;
             }
@@ -85,11 +80,11 @@ public class ServerEmailController implements ActionListener {
             out.writeInt(numLette);
             out.flush();
 
-            dynamicPort = (int) (Math.random() * (10*5 - 0 + 1));
+            dynamicPort = (int) (Math.random()+(10*5+1));
             out.writeInt(dynamicPort);
             out.flush();
 
-            new Thread(() -> {
+            threadPool.submit(() -> {
                 try {
                     // Specifica l'indirizzo IP e una porta dinamica
                     InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
@@ -104,7 +99,7 @@ public class ServerEmailController implements ActionListener {
                 } catch (IOException e) {
                     serverEmailMod.addLog("Errore nella sincronizzazione: " + e.getMessage());
                 }
-            }).start();
+            });
 
 
         } catch (IOException e) {
@@ -163,13 +158,13 @@ public class ServerEmailController implements ActionListener {
 
                 for (int i = 0; i < users.length; i++) {
 
-                    if(!validUsers.contains(users[i])){
+                    if(!validUsers.contains(users[i])) {
                         serverEmailMod.addLog("Connessione rifiutata: utente non registrato - " + users[i]);
                         out_send.writeUTF("ERROR");
                         out_send.flush();
                         break;
                     } else {
-                        serverEmailMod.inviaMail(email);
+                        serverEmailMod.inviaMail(email, users[i]);
                         out_send.writeUTF("OK");
                         out_send.flush();
                     }
@@ -183,7 +178,7 @@ public class ServerEmailController implements ActionListener {
                     out_send.flush();
 
                 } else {
-                    serverEmailMod.inviaMail(email);
+                    serverEmailMod.inviaMail(email, null);
                     out_send.writeUTF("OK");
                     out_send.flush();
                 }

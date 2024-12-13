@@ -55,7 +55,7 @@ public class ServerEmailApp extends Application {
     private void startServer() {
         threadPool = Executors.newFixedThreadPool(20);
 
-            new Thread(() -> {
+            threadPool.submit(() -> {
                 try {
                     // Specifica l'IP e la porta
                     InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
@@ -65,14 +65,14 @@ public class ServerEmailApp extends Application {
                     while (true) {
                         Socket clientSocket = serverSocket.accept();
                         controller = new ServerEmailController(emailModel, logList);
-                         threadPool.submit(() -> controller.handleClient(clientSocket, threadPool));
+                        threadPool.submit(() -> controller.handleClient(clientSocket, threadPool));
                     }
                 } catch (IOException e) {
                     emailModel.addLog("Errore nella comunicazione con il server: " + e.getMessage());
                 }
-            }).start();
+            });
 
-            new Thread(() -> {
+            threadPool.submit(() -> {
                 try {
                     // Specifica l'IP e la porta
                     InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
@@ -86,9 +86,9 @@ public class ServerEmailApp extends Application {
                 } catch (IOException e) {
                     emailModel.addLog("Errore nell'eliminazione: " + e.getMessage());
                 }
-            }).start();
+            });
 
-            new Thread(() -> {
+            threadPool.submit(() -> {
                 try {
                     // Specifica l'IP e la porta
                     InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
@@ -102,9 +102,9 @@ public class ServerEmailApp extends Application {
                 } catch (IOException e) {
                     emailModel.addLog("Errore nell'invio: " + e.getMessage());
                 }
-            }).start();
+            });
 
-            new Thread(() -> {
+            threadPool.submit(() -> {
                 try {
                     // Specifica l'IP e la porta
                     InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
@@ -118,7 +118,7 @@ public class ServerEmailApp extends Application {
                 } catch (IOException e) {
                     emailModel.addLog("Errore nella visualizzazione: " + e.getMessage());
                 }
-            }).start();
+            });
     }
 
     private void stopServer() {

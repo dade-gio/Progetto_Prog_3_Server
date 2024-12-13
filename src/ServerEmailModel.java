@@ -45,9 +45,11 @@ public class ServerEmailModel extends Observable {
                     emailFields[1].equals(mail.getCcString()) &&               // Destinatari
                     emailFields[2].equals(mail.getArgEmail()) &&               // Argomento
                     emailFields[3].equals(mail.getDataSpedEmail()) &&          // Data
-                    emailFields[4].equals(mail.getTestoEmail().replace("\n", "§"))) { // Testo
+                    emailFields[4].equals(mail.getDest()) &&
+                    emailFields[5].equals(mail.getTestoEmail().replace("\n", "§"))) { // Testo
                 // La mail è stata trovata, segna come letta
-                emailFields[5] = "true";  // Imposta il flag "isRead" a true
+                emailFields[6] = "true";  // Imposta il flag "isRead" a true
+
                 emailFound = true;
                 break;
             }
@@ -72,21 +74,41 @@ public class ServerEmailModel extends Observable {
      * @param mail mail da inviare
      */
 
-    public synchronized boolean inviaMail(Email mail) throws Exception {
+    public synchronized boolean inviaMail(Email mail, String destinatari_multipli) throws Exception {
 
+        mail.setDest(destinatari_multipli);
         mail.setTestoEmail(mail.getTestoEmail().replace("§", "\n"));
-        String[] newEmail = {
-                mail.getMittEmail(),
-                mail.getCcString(), // Comma-separated list of recipients
-                mail.getArgEmail(),
-                mail.getDataSpedEmail(),
-                mail.getTestoEmail().replace("\n", "§"),
-                Boolean.toString(mail.getIsRead())       // Convert boolean isRead to a string ("true"/"false")
-        };
-        emailData.add(newEmail);
-        updateCsvFile();
-        addLog(mail.getMittEmail() + " ha inviato una nuova mail a: " + mail.getCcString());
-        return true;
+
+        if (destinatari_multipli==null) {
+            
+            String[] newEmail = {
+                    mail.getMittEmail(),
+                    mail.getCcString(), // Comma-separated list of recipients
+                    mail.getArgEmail(),
+                    mail.getDataSpedEmail(),
+                    mail.getCcString(), // Convert boolean isRead to a string ("true"/"false")
+                    mail.getTestoEmail().replace("\n", "§"),
+                    Boolean.toString(mail.getIsRead()),
+            };
+            emailData.add(newEmail);
+            updateCsvFile();
+            addLog(mail.getMittEmail() + " ha inviato una nuova mail a: " + mail.getCcString());
+            return true;
+        } else {
+            String[] newEmail = {
+                    mail.getMittEmail(),
+                    mail.getDest(), // Comma-separated list of recipients
+                    mail.getArgEmail(),
+                    mail.getDataSpedEmail(),
+                    mail.getCcString(), // Convert boolean isRead to a string ("true"/"false")
+                    mail.getTestoEmail().replace("\n", "§"),
+                    Boolean.toString(mail.getIsRead()),
+            };
+            emailData.add(newEmail);
+            updateCsvFile();
+            addLog(mail.getMittEmail() + " ha inviato una nuova mail a: " + mail.getCcString());
+            return true;
+        }
     }
 
 
@@ -102,11 +124,12 @@ public class ServerEmailModel extends Observable {
             String[] emailFields = iterator.next();
 
             // Confronta tutti i campi univoci dell'email
-            if (emailFields[0].equals(mailToDelete.getMittEmail()) &&               // Mittente
+            if (emailFields[0].equals(mailToDelete.getMittEmail()) &&                  // Mittente
                     emailFields[1].equals(mailToDelete.getCcString()) &&               // Destinatari
                     emailFields[2].equals(mailToDelete.getArgEmail()) &&               // Argomento
                     emailFields[3].equals(mailToDelete.getDataSpedEmail()) &&          // Data
-                    emailFields[4].equals(mailToDelete.getTestoEmail().replace("\n", "§"))) { // Testo
+                    emailFields[4].equals(mailToDelete.getDest()) &&
+                    emailFields[5].equals(mailToDelete.getTestoEmail().replace("\n", "§"))) { // Testo
                 iterator.remove();
                 found = true;
                 break;
@@ -147,11 +170,12 @@ public class ServerEmailModel extends Observable {
                 email.setDestsEmail(Arrays.asList(emailFields[1].split(",")));
                 email.setArgEmail(emailFields[2]);
                 email.setDataSpedEmail(emailFields[3]);
-                email.setTestoEmail(emailFields[4].replace("§", "\n"));
-                boolean isRead = emailFields.length > 5 && emailFields[5].equals("true");
+                email.setDest(emailFields[4]);
+                email.setTestoEmail(emailFields[5].replace("§", "\n"));
+                boolean isRead = emailFields.length > 5 && emailFields[6].equals("true");
                 email.setRead(isRead);
 
-                if (Objects.equals(emailFields[5], "false")) {
+                if (Objects.equals(emailFields[6], "false")) {
                     cntLette++;
                 }
 

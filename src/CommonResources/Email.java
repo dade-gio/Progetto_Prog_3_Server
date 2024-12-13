@@ -99,5 +99,7 @@ public class Email implements Serializable {
         return cntEmail;
     }
 
-
+    public void setDest(String emailField) {
+        this.dest = emailField;
+    }
 }
