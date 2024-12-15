@@ -1,7 +1,5 @@
-user@gmail.com#user@gmail.com#user@gmail.com#13/12/2024 12:34#user@gmail.com#user@gmail.com#true
-user@gmail.com#user@gmail.com#a#13/12/2024 12:34#user@gmail.com, user2@gmail.com#a#true
-user@gmail.com#user2@gmail.com#a#13/12/2024 12:34#user@gmail.com, user2@gmail.com#a#false
-user@gmail.com#user2@gmail.com#w#13/12/2024 12:44#user2@gmail.com, user3@gmail.com#e#true
-user@gmail.com#user3@gmail.com#w#13/12/2024 12:44#user2@gmail.com, user3@gmail.com#e#false
-user2@gmail.com#user@gmail.com#Re to all: w#13/12/2024 12:48#user@gmail.com, user3@gmail.com#e#true
-user2@gmail.com#user3@gmail.com#Re to all: w#13/12/2024 12:48#user@gmail.com, user3@gmail.com#e#false
+user@gmail.com#user2@gmail.com#prova1#15/12/2024 14:02#user2@gmail.com, user3@gmail.com#ggg#true
+user@gmail.com#user3@gmail.com#prova1#15/12/2024 14:02#user2@gmail.com, user3@gmail.com#ggg#true
+user3@gmail.com#user@gmail.com#Re to all: prova1#15/12/2024 14:14#user@gmail.com, user2@gmail.com#ciao#false
+user3@gmail.com#user2@gmail.com#Re to all: prova1#15/12/2024 14:14#user@gmail.com, user2@gmail.com#ciao#true
+user2@gmail.com#user3@gmail.com#Fwd: Re to all: prova1#15/12/2024 14:14#user3@gmail.com#no#true

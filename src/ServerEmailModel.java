@@ -80,7 +80,7 @@ public class ServerEmailModel extends Observable {
         mail.setTestoEmail(mail.getTestoEmail().replace("§", "\n"));
 
         if (destinatari_multipli==null) {
-            
+
             String[] newEmail = {
                     mail.getMittEmail(),
                     mail.getCcString(), // Comma-separated list of recipients
@@ -115,7 +115,7 @@ public class ServerEmailModel extends Observable {
     /**
      * Metodo che rimuove dalla lista di mail la
      * @param mailToDelete è la mail da eliminare
-    */
+     */
     public void deleteEmail(Email mailToDelete) {
         Iterator<String[]> iterator = emailData.iterator();
         boolean found = false;

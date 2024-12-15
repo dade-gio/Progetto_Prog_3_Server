@@ -80,7 +80,7 @@ public class ServerEmailController implements ActionListener {
             out.writeInt(numLette);
             out.flush();
 
-            dynamicPort = (int) (Math.random()+(10*5+1));
+            dynamicPort = 50000 + (int)(Math.random() * 10000); // Porta tra 50000 e 59999
             out.writeInt(dynamicPort);
             out.flush();
 

@@ -55,70 +55,70 @@ public class ServerEmailApp extends Application {
     private void startServer() {
         threadPool = Executors.newFixedThreadPool(20);
 
-            threadPool.submit(() -> {
-                try {
-                    // Specifica l'IP e la porta
-                    InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
-                    serverSocket = new ServerSocket(PORT, 50, bindAddress);
-                    emailModel.addLog("Server in ascolto su IP: " + bindAddress + " e porta: " + PORT);
+        threadPool.submit(() -> {
+            try {
+                // Specifica l'IP e la porta
+                InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
+                serverSocket = new ServerSocket(PORT, 50, bindAddress);
+                emailModel.addLog("Server in ascolto su IP: " + bindAddress + " e porta: " + PORT);
 
-                    while (true) {
-                        Socket clientSocket = serverSocket.accept();
-                        controller = new ServerEmailController(emailModel, logList);
-                        threadPool.submit(() -> controller.handleClient(clientSocket, threadPool));
-                    }
-                } catch (IOException e) {
-                    emailModel.addLog("Errore nella comunicazione con il server: " + e.getMessage());
+                while (true) {
+                    Socket clientSocket = serverSocket.accept();
+                    controller = new ServerEmailController(emailModel, logList);
+                    threadPool.submit(() -> controller.handleClient(clientSocket, threadPool));
                 }
-            });
+            } catch (IOException e) {
+                emailModel.addLog("Errore nella comunicazione con il server: " + e.getMessage());
+            }
+        });
 
-            threadPool.submit(() -> {
-                try {
-                    // Specifica l'IP e la porta
-                    InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
-                    deleteServerSocket = new ServerSocket(12346, 50, bindAddress);
+        threadPool.submit(() -> {
+            try {
+                // Specifica l'IP e la porta
+                InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
+                deleteServerSocket = new ServerSocket(12346, 50, bindAddress);
 
-                    while (true) {
-                        Socket deleteSocket = deleteServerSocket.accept(); // entri solo se accetta
-                        controller = new ServerEmailController(emailModel, logList);
-                        threadPool.submit(() -> controller.handleDelete(deleteSocket));
-                    }
-                } catch (IOException e) {
-                    emailModel.addLog("Errore nell'eliminazione: " + e.getMessage());
+                while (true) {
+                    Socket deleteSocket = deleteServerSocket.accept(); // entri solo se accetta
+                    controller = new ServerEmailController(emailModel, logList);
+                    threadPool.submit(() -> controller.handleDelete(deleteSocket));
                 }
-            });
+            } catch (IOException e) {
+                emailModel.addLog("Errore nell'eliminazione: " + e.getMessage());
+            }
+        });
 
-            threadPool.submit(() -> {
-                try {
-                    // Specifica l'IP e la porta
-                    InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
-                    sendServerSocket = new ServerSocket(12347, 50, bindAddress);
+        threadPool.submit(() -> {
+            try {
+                // Specifica l'IP e la porta
+                InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
+                sendServerSocket = new ServerSocket(12347, 50, bindAddress);
 
-                    while (true) {
-                        Socket sendSocket = sendServerSocket.accept(); // entri solo se accetta
-                        controller = new ServerEmailController(emailModel, logList);
-                        threadPool.submit(() -> controller.handleSend(sendSocket));
-                    }
-                } catch (IOException e) {
-                    emailModel.addLog("Errore nell'invio: " + e.getMessage());
+                while (true) {
+                    Socket sendSocket = sendServerSocket.accept(); // entri solo se accetta
+                    controller = new ServerEmailController(emailModel, logList);
+                    threadPool.submit(() -> controller.handleSend(sendSocket));
                 }
-            });
+            } catch (IOException e) {
+                emailModel.addLog("Errore nell'invio: " + e.getMessage());
+            }
+        });
 
-            threadPool.submit(() -> {
-                try {
-                    // Specifica l'IP e la porta
-                    InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
-                    showServerSocket = new ServerSocket(12349, 50, bindAddress);
+        threadPool.submit(() -> {
+            try {
+                // Specifica l'IP e la porta
+                InetAddress bindAddress = InetAddress.getByName("0.0.0.0"); // Sostituisci con l'IP desiderato
+                showServerSocket = new ServerSocket(12349, 50, bindAddress);
 
-                    while (true) {
-                        Socket showSocket = showServerSocket.accept(); // entri solo se accetta
-                        controller = new ServerEmailController(emailModel, logList);
-                        threadPool.submit(() -> controller.handleShow(showSocket));
-                    }
-                } catch (IOException e) {
-                    emailModel.addLog("Errore nella visualizzazione: " + e.getMessage());
+                while (true) {
+                    Socket showSocket = showServerSocket.accept(); // entri solo se accetta
+                    controller = new ServerEmailController(emailModel, logList);
+                    threadPool.submit(() -> controller.handleShow(showSocket));
                 }
-            });
+            } catch (IOException e) {
+                emailModel.addLog("Errore nella visualizzazione: " + e.getMessage());
+            }
+        });
     }
 
     private void stopServer() {
